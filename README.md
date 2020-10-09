@@ -9,4 +9,4 @@ To handle basic user creation and sign in along with some other functionalities 
 1. SSH key generation
 2. Passwordless login
 
-Runtime environemnt being used is [NodeJS](https://nodejs.org/en/)
+Runtime environemnt being used is [NodeJS](https://nodejs.org/en/).
