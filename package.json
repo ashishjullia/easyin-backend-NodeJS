@@ -1,0 +1,16 @@
+{
+  "name": "easyin-backend-nodejs",
+  "version": "1.0.0",
+  "description": "This will contain all the code related to easyin backend api.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://team-1602132687518-admin@bitbucket.org/team-1602132687518/easyin-backend-nodejs.git"
+  },
+  "author": "Ashish Jullia",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/team-1602132687518/easyin-backend-nodejs#readme"
+}
