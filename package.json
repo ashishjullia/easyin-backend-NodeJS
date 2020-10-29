@@ -12,5 +12,14 @@
   },
   "author": "Ashish Jullia",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/team-1602132687518/easyin-backend-nodejs#readme"
+  "homepage": "https://bitbucket.org/team-1602132687518/easyin-backend-nodejs#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "http": "0.0.1-security",
+    "mongoose": "^5.10.11",
+    "nodemon": "^2.0.6"
+  }
 }
