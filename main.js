@@ -20,3 +20,18 @@ mongoose.connect(process.env.DB, {useNewUrlParser: true, useUnifiedTopology: tru
     console.log('Connection to database is created (DB)')
 );
 
+// Make our app use the body-parser
+express.use(bodyParser.json());
+
+// Import Routes & register them as "middleware"
+// Middlewares
+
+const userRoute = require('./routes/userRoute');
+
+express.use(session({
+    secret: "secret",
+    saveUninitialized: false,
+    resave: true
+}))
+
+express.use('/Users', userRoute);
