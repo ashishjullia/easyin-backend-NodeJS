@@ -27,6 +27,7 @@ express.use(bodyParser.json());
 // Middlewares
 
 const userRoute = require('./routes/userRoute');
+const dashboardRoute = require('./routes/dashboardRoute');
 
 express.use(session({
     secret: "secret",
@@ -35,3 +36,4 @@ express.use(session({
 }))
 
 express.use('/Users', userRoute);
+express.use('/Dashboard', dashboardRoute);
