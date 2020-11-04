@@ -14,3 +14,9 @@ server.listen(8080, '0.0.0.0', function() {
     var addr = server.address();
     console.log(`API is running and listening on -> ${addr.address}:${addr.port}`);
 });
+
+// Preparing the database connection
+mongoose.connect(process.env.DB, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true}, () =>
+    console.log('Connection to database is created (DB)')
+);
+
