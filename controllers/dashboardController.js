@@ -30,3 +30,18 @@ exports.generatekeys = async (req, res, next) => {
         res.json({ message: "keys created!" });
     });
 };
+
+exports.download = async (req, res, next) => {
+
+    const file = __dirname + '/../keys/foo_rsa';
+    res.download(file); // Set disposition and send it.
+};
+
+exports.fileurl = async (req, res, next) => {
+    
+    var QRCode = require('qrcode')
+    QRCode.toString('http://10.88.116.19:8080/dashboard/generatekeys/download', {type:'terminal'}, function (err, url) {
+      console.log(url)
+    });
+    res.json({ message: "Done!" });
+};
