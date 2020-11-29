@@ -2,20 +2,56 @@ const User = require('../models/UserModel');
 
 const bcrypt = require('bcryptjs');
 
-const HttpError = require('../models/HttpErrorModel.js');
+const HttpError = require('../models/HttpErrorModel');
 
 const { validationResult } = require('express-validator');
 
 const jsonwebtoken = require('jsonwebtoken');
 
+const UserFingerprint = require('../models/UserFingerprintModel');
+
+const CheckFingerprint = require('../models/CheckFingerprintInputModel');
+
+// var cors = require('cors')
+//
+// var corsOptions = {
+//     origin: 'http://localhost:3000',
+//     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// }
+
+// check for session
+exports.sessionCheck = async (req, res, next) => {
+    if (req.session.email) {
+        return res.json({
+            status: true
+        });
+
+    }
+    else {
+        return res.json({
+            status: false
+        });
+    }
+}
+
+// Testing
+exports.testing = async (req, res, next) => {
+    // let userName;
+    // userName = await User.findOne({ email: "ashish@example.com" });
+    // res.json({
+    //     message: userName.email
+    // });
+}
+
 // CREATE a user
 exports.signUp = async (req, res, next) => {
     // Validating the data before creating a user
     const errors = validationResult(req);
-    if (!errors.isEmpty) {
-        return next(
-            new HttpError('Invalid inputs, please provide correct data!', 422)
-        );
+    if (!errors.isEmpty()) {
+        // return next(
+        //     new HttpError('Invalid inputs, please provide correct data!', 422)
+        // );
+        return res.json("Invalid inputs, please provide correct data!");
     }
 
     const { firstname, lastname, email, password } = req.body;
@@ -25,14 +61,19 @@ exports.signUp = async (req, res, next) => {
     try {
         userExists = await User.findOne({ email: email });
     } catch (err) {
-        const error = new HttpError('Sign up failed!', 500);
-        // important to return from here.
-        return next(error);         
+        // const error = new HttpError('Sign up failed!', 500);
+        // // important to return from here.
+        // return next(error);
+        return res.json("Sign up failed!");
     }
 
     if (userExists) {
-        const error = new HttpError('User already registered with this email, try logging in instead!', 422);
-        return next(error);
+        // const error = new HttpError('User already registered with this email, try logging in instead!', 422);
+        return res.json({
+            message: "User already registered with this email, try logging in instead!",
+            status: false
+        });
+        // return next(error);
     }
 
     // Crypt the password before saving it
@@ -42,8 +83,9 @@ exports.signUp = async (req, res, next) => {
     try {
         cryptPassword = await bcrypt.hash(password, 10);
     } catch (err) {
-        const error = new HttpError('Could not create user, at this time, try again later!', 500);
-        return next(error);
+        // const error = new HttpError('Could not create user, at this time, try again later!', 500);
+        // return next(error);
+        return res.json("Could not create user, at this time, try again later!");
     } 
 
     // creating a new user from the data being sent via a post request
@@ -57,11 +99,15 @@ exports.signUp = async (req, res, next) => {
     // save the data to the User model/collection
     try {
         const savedUser =  await newUser.save();
-        res.status(201).json(savedUser);
+        return res
+            .status(201)
+            .json({
+                message: "User Added!",
+                status: true
+            });
+        // res.status(201).json("User Added!");
     } catch (err) {
-        res.json({
-            message: err
-        });
+        return res.json(err);
     }
 
     // Generate a token
@@ -72,34 +118,38 @@ exports.signUp = async (req, res, next) => {
             'secret', 
             {expiresIn: '1h'});
     } catch (err) {
-        const error = new HttpError('Could not create user, at this time, try again later!', 500);
-        return next(error);
+        return res.json("Could not create user, at this time, try again later!");
+        // const error = new HttpError('Could not create user, at this time, try again later!', 500);
+        // return next(error);
     } 
 
-    res.status(201).json({
-        userId: newUser.id,
-        email: newUser.email,
-        token: token
-    });
+    // res.status(201).json("User Added!");
+
+    // res.status(201).json({
+    //     userId: newUser.id,
+    //     email: newUser.email,
+    //     token: token
+    // });
 };
 
 // USER login
 exports.logIn = async (req, res, next) => {
 
+    // console.log(req.body.email,req.body.password );
     sess = req.session;
     if (sess != undefined && sess.loggedIn != undefined) {
-        return next(
-            new HttpError('A user is already logged in.', 422)
-        );
+
+        return res.json({
+            message: "A user is already logged in.",
+            status: true
+        });
     }
 
     // Validating the data before anything else
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return next(
-            new HttpError('Invalid inputs, please provide correct data!', 422)
-        );
+        return res.json("Invalid inputs, please provide correct data!");
     }
 
     const { email, password } = req.body;
@@ -110,28 +160,23 @@ exports.logIn = async (req, res, next) => {
     try {
         userExists = await User.findOne({ email: email });
     } catch (err) {
-        const error = new HttpError('Logging in failed, try again later!', 500);
-        // important to return from here.
-        return next(error);         
+        return res.json("Logging in failed, try again later!");
     }
     
     // Step 2: compare its email and password with the passed/fetched
     if (!userExists) {
-        const error = new HttpError('Invalid Credentials, logging in failed!', 401);
-        return next(error);
+        return res.json("User not registered, logging in failed!");
     }
     
     let validPassword = false;
     try {
         validPassword = await bcrypt.compare(password, userExists.password);
     } catch (err) {
-        const error = new HttpError('Cannot log in, please check credentials!', 500);
-        return next(error);
+        return res.json("Cannot log in, please check credentials!");
     }
     
     if (!validPassword) {
-        const error = new HttpError('Invalid Credentials, logging in failed!', 401);
-        return next(error);
+        return res.json("Invalid Credentials, logging in failed!");
     }
 
     // if all the upper validations are valid, only then we'll generate and give token to this user
@@ -149,33 +194,139 @@ exports.logIn = async (req, res, next) => {
             sess.userId = userExists.id;
             sess.token = token; 
         }
+        // req.session = sess;
+        console.log(req.session);
+        console.log(sess);
     } catch (err) {
-        const error = new HttpError('Logging in failed, at this time, try again later!', 500);
-        return next(error);
+        return res.json("Logging in failed, at this time, try again later!");
     } 
     
     res.append('token', token);
-    res.json({
-        userId: userExists.id,
-        email: userExists.email,
-        message: "Logged in",
-        ses: sess
+    return res.status(201).json({
+        message: "User Logged In",
+        status: true,
+        session: req.session
     });
+    // res.json({
+    //     userId: userExists.id,
+    //     email: userExists.email,
+    //     message: "Logged in",
+    //     ses: sess
+    // });
 };
+
+
+// PasswordLess
+exports.logInPasswordLess = async  (req, res, next) => {
+    var intervalFun = async ()=>{
+
+    sess = req.session;
+
+    console.log(req.session);
+
+    if (sess != undefined && sess.loggedIn != undefined) {
+        return res.json("A user is already logged in.");
+    }
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.json("Invalid inputs, please provide correct data!");
+    }
+
+    const { email } = req.body;
+
+    // Check whether user is registered for fingerprint or not
+    let userFingerprintExists;
+    try {
+        let userExists;
+        try {
+            userExists = await User.findOne({ email: email });
+
+            if (userExists) {
+                userFingerprintExists = await UserFingerprint.findOne({ id: userExists._id, email: email, fingerprint: true });
+                let userFingerprintInputExists;
+                userFingerprintInputExists = await CheckFingerprint.findOne({ email: email });
+                if (userFingerprintInputExists) {
+                    clearInterval(value);
+                }
+                // clearInterval(value);
+            } else {
+                return res.json("User not registered!");
+            }
+        } catch (err) {
+            return res.json("Logging in failed, try again later!");
+        }
+
+    } catch (err) {
+        return res.json("Logging with Fingerprint failed!");
+    }
+
+    if (userFingerprintExists) {
+        let token;
+        try {
+            token = jsonwebtoken.sign(
+                {userId: userFingerprintExists.id},
+                'secret',
+                {expiresIn: '1h'});
+            if (sess.loggedIn === undefined) {
+                sess.loggedIn = true;
+                sess.email = userFingerprintExists.email;
+                sess.userId = userFingerprintExists.id;
+                sess.token = token;
+            }
+            // req.session = sess;
+            console.log(req.session);
+            console.log(sess);
+        } catch (err) {
+            return res.json("Logging in failed, at this time, try again later!");
+        }
+
+        res.append('token', token);
+        return res.status(201).json({
+            message: "User Logged In With Fingerprint",
+            status: true,
+            session: req.session
+        });
+    } else {
+            return res.json({
+                message: "User not registered for fingerprint login!",
+                status: false
+            });
+    }
+    }
+    var value = setInterval(intervalFun, 10000);
+
+    // console.log("Logged In")
+    // res.json("Logged In")
+};
+
 
 // USER LogOut
 exports.logOut = async (req, res, next) => {
     try {
         if (req.session.loggedIn !== undefined ) {
-            req.session.destroy();
-            res.json({ message: "logout" });
+            req.session.destroy(err => {
+                res.clearCookie("session-cookie-name", { path: "/" });});
+            sess = null;
+            console.log(req.session);
+            // res.json({ message: "logout" });
+            return res.json({
+                message: "logout",
+                status: true
+            });
         }
         else {
-            res.json({ message: "No user is logged in." });
+            return res.json({
+                message: "No user is logged in.",
+                status: false
+            });
         }
     } catch (err) {
-        const error = new HttpError ('Unable to destroy session.', 422);
-        return next(error);
+        return res.json({
+            message: "Unable to destroy session.",
+            status: false
+        });
     }
 }
 
@@ -192,4 +343,18 @@ exports.getAllUsers = async (req, res, next) => {
         const error = new HttpError('No users found!', 500);
         return next(error);
     }
+};
+
+exports.setFingerprintInputFromMobileDevice = async (req, res, next) => {
+    const { email } = req.body;
+    const newFingerprintInput = new CheckFingerprint({
+        email: email,
+        status: true
+    });
+
+    const savednewFingerprintInput =  await newFingerprintInput.save();
+    return res.json({
+        message: "Input Done",
+        status: true
+    });
 };

@@ -5,6 +5,9 @@ const users_controllers = require('../controllers/userController');
 
 const { check } = require('express-validator');
 
+
+router.get('/sessioncheck', users_controllers.sessionCheck);
+
 // GET all Users
 router.get('/', users_controllers.getAllUsers);
 
@@ -26,8 +29,15 @@ router.post('/login',
     ],
     users_controllers.logIn);
 
+// USER login Passwordless
+router.post('/login/passwordless', users_controllers.logInPasswordLess);
+
 // USER logout
 router.post('/logout', users_controllers.logOut);
+
+router.get('/test', users_controllers.testing);
+
+router.post('/setfingerprintinput', users_controllers.setFingerprintInputFromMobileDevice);
 
 // Export 
 module.exports = router;
