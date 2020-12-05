@@ -33,15 +33,6 @@ express.use(cors({
         preflightContinue: true
 }));
 
-// Import Routes & register them as "middleware"
-// Middlewares
-
-
-// var corsOptions = {
-//     origin: 'http://localhost:3000',
-//     optionsSuccessStatus: 200// some legacy browsers (IE11, various SmartTVs) choke on 204
-// }
-
 const userRoute = require('./routes/userRoute');
 const dashboardRoute = require('./routes/dashboardRoute');
 const identityRoute = require('./routes/identityRoute')
@@ -50,17 +41,9 @@ const identityRoute = require('./routes/identityRoute')
 express.use(session({
     secret: "secret",
     saveUninitialized: false,
-    resave: true,
+    resave: false,
     httpOnly: false
-    // ,
-    // cookie:
-    //     {
-    //         secure: true,
-    //         sameSite: 'none'
-    //     }
 }))
-
-// express.use(cookieParser());
 
 express.use('/Users', userRoute);
 express.use('/Dashboard', dashboardRoute);
