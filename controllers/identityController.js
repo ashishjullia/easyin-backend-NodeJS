@@ -32,7 +32,7 @@ exports.postidentity = async (req, res, next) => {
 
     const { email } = req.body;
 
-    // Check whether identity already there or not
+    // Check whether identity already there or not.
     let identity;
 
     const newIdentity = new Identity({
