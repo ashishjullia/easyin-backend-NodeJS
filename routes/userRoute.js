@@ -30,7 +30,11 @@ router.post('/login',
     users_controllers.logIn);
 
 // USER login Passwordless
-router.post('/login/passwordless', users_controllers.logInPasswordLess);
+router.post('/login/passwordless',
+    [
+        check('email').not().isEmpty()
+    ],
+    users_controllers.logInPasswordLess);
 
 // USER logout
 router.post('/logout', users_controllers.logOut);
