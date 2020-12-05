@@ -11,15 +11,7 @@ router.post('/', dashboard_controller.dashboardHome);
 // Create SSH keys
 router.post('/addfingerprint', dashboard_controller.addfingerprint);
 
-// // Download Private Key
-// router.get('/generatekeys/download', dashboard_controller.download);
-//
-// // QR Code Link
-// router.post('/generatekeys/fileurl', dashboard_controller.fileurl);
-
-router.get('/testget', dashboard_controller.testget);
-
-router.post('/testpost', dashboard_controller.testpost);
+router.post('/removefingerprint', dashboard_controller.removefingerprint);
 
 // Export 
 module.exports = router;
