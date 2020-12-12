@@ -39,8 +39,7 @@ router.post('/login/passwordless',
 // USER logout
 router.post('/logout', users_controllers.logOut);
 
-router.get('/test', users_controllers.testing);
-
+// Set fingerprint input
 router.post('/setfingerprintinput', users_controllers.setFingerprintInputFromMobileDevice);
 
 // Export 
