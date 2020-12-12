@@ -1,7 +1,5 @@
 const fs = require('fs');
 
-const HttpError = require('../models/HttpErrorModel.js');
-
 const { validationResult } = require('express-validator');
 
 const jsonwebtoken = require('jsonwebtoken');
