@@ -48,3 +48,5 @@ express.use(session({
 express.use('/Users', userRoute);
 express.use('/Dashboard', dashboardRoute);
 express.use('/Identity', identityRoute);
+
+module.exports = server
