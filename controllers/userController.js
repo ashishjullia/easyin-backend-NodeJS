@@ -173,7 +173,6 @@ exports.logIn = async (req, res, next) => {
     });
 };
 
-
 // PasswordLess
 exports.logInPasswordLess = async  (req, res, next) => {
     var intervalFun = async ()=>{
@@ -235,9 +234,6 @@ exports.logInPasswordLess = async  (req, res, next) => {
                 sess.userId = userFingerprintExists.id;
                 sess.token = token;
             }
-            // req.session = sess;
-            console.log(req.session);
-            console.log(sess);
         } catch (err) {
             return res.json({ message: "Logging in failed, at this time, try again later!" });
         }
