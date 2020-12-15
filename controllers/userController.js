@@ -296,6 +296,11 @@ exports.getAllUsers = async (req, res, next) => {
     }
 };
 
+exports.deleteAllUsers = async (req, res, next) => {
+    let result = await User.remove({});
+    return res.json({ "result": result });
+    };
+
 exports.setFingerprintInputFromMobileDevice = async (req, res, next) => {
     try {const { email } = req.body;
     const newFingerprintInput = new CheckFingerprint({
