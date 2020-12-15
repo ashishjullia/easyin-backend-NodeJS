@@ -11,6 +11,9 @@ router.get('/sessioncheck', users_controllers.sessionCheck);
 // GET all Users
 router.get('/', users_controllers.getAllUsers);
 
+// Delete all users
+router.post('/clean', users_controllers.deleteAllUsers);
+
 // CREATE a user
 router.post('/signup',
     [
